@@ -43,6 +43,7 @@ def trust(endpoint):
 
 
 def setupNewLedger(endpoint):
+    """Creates a new ledger where none yet exist, remote or local."""
     context = dbinterface.getContext()
     # make ledgers entry
     with sl.connect('trustledgers.db') as con:

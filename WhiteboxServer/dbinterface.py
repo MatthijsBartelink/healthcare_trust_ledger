@@ -1,7 +1,6 @@
 """
 This file contains simple getters and setters for database interaction. Any
-repeated SQL query should be implemented here. Note that the connection with the
-database is assumed for these functions, and must be passed.
+repeated SQL query should be implemented here.
 """
 import sqlite3 as sl
 
