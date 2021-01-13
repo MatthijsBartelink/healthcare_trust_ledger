@@ -9,9 +9,10 @@ name = "testname1"
 with con:
     # make ledgers table
     con.execute("""
-        CREATE TABLE LEDGERS (
+        CREATE TABLE LEDGER (
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-            name TEXT
+            name TEXT,
+            count INTEGER
         );
     """)
     # make environment variables storage area

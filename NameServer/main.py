@@ -17,14 +17,39 @@ def register(myaddress, endpoint):
     """
     Register myaddress as an endorser for endpoint.
     """
+    print("received registration:\nendorser: " + myaddress + " endpoint: " + endpoint)
+
     # Omitted in this prototype: Verify that myaddress is a valid whitebox and actual sender
 
     if dbinterface.knownEndpoint(endpoint):
-
+        con = sl.connect(str(endpoint)+'.db')
+        con.execute("INSERT INTO ENDORSER (id, address) values (?, ?)", (dbinterface.findEndorserCount(endpoint), myaddress))
+        con.commit()
+        dbinterface.incEndorserCount(endpoint)
+        return "now endorsing endpoint " + str(endpoint)
     else:
         dbinterface.addToLedgers(endpoint)
         #make db for endpoint
         con = sl.connect(str(endpoint)+'.db')
-        con.execute("")
+        con.execute("""
+            CREATE TABLE ENDORSER (
+                id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                address TEXT
+            );
+        """)
+        con.execute("INSERT INTO ENDORSER (id, address) values (?, ?)", (dbinterface.findEndorserCount(endpoint), myaddress))
+        con.commit()
+        dbinterface.incEndorserCount(endpoint)
+        return "Registered new endpoint"
 
-    return
+@app.route('/deregister/<myaddress>/<endpoint>')
+def deregister(myaddress, endpoint):
+    if dbinterface.knownEndpoint(endpoint):
+        if dbinterface.knownEndorser(endpoint, myaddress):
+            dbinterface.deleteEndorser(endpoint, myaddress)
+            dbinterface.decEndorserCount(endpoint)
+            return "Deregistration succeeded"
+        else:
+            return "Deregistration failed, endorser not known"
+    else:
+        return "Deregistration failed, endpoint not known"
