@@ -1,3 +1,5 @@
+import secrets
+
 from flask import Flask
 import sqlite3 as sl
 
@@ -17,11 +19,13 @@ def register(myaddress, endpoint):
     """
     Register myaddress as an endorser for endpoint.
     """
-    print("received registration:\nendorser: " + myaddress + " endpoint: " + endpoint)
+    # print("received registration:\nendorser: " + myaddress + " endpoint: " + endpoint)
 
     # Omitted in this prototype: Verify that myaddress is a valid whitebox and actual sender
 
     if dbinterface.knownEndpoint(endpoint):
+        if dbinterface.knownEndorser(endpoint, myaddress):
+            return "Registration failed, already registered"
         con = sl.connect(str(endpoint)+'.db')
         con.execute("INSERT INTO ENDORSER (id, address) values (?, ?)", (dbinterface.findEndorserCount(endpoint), myaddress))
         con.commit()
@@ -44,6 +48,7 @@ def register(myaddress, endpoint):
 
 @app.route('/deregister/<myaddress>/<endpoint>')
 def deregister(myaddress, endpoint):
+    # Omitted in this prototype: Verify that myaddress is a valid whitebox and actual sender
     if dbinterface.knownEndpoint(endpoint):
         if dbinterface.knownEndorser(endpoint, myaddress):
             dbinterface.deleteEndorser(endpoint, myaddress)
@@ -53,3 +58,22 @@ def deregister(myaddress, endpoint):
             return "Deregistration failed, endorser not known"
     else:
         return "Deregistration failed, endpoint not known"
+
+@app.route('/getnumendorsers/<endpoint>')
+def getnumendorsers(endpoint):
+    if dbinterface.knownEndpoint(endpoint):
+        return str(dbinterface.findEndorserCount(endpoint))
+    return "0"
+
+@app.route('/getreference/<endpoint>')
+def getreference(endpoint):
+    if dbinterface.knownEndpoint(endpoint):
+        num_endorsers = dbinterface.findEndorserCount(endpoint)
+        if num_endorsers == 0:
+            return "no endorsers"
+        else:
+            random_reference = secrets.randbelow(num_endorsers)
+            endorser = dbinterface.getEndorserById(endpoint, random_reference)
+            return endorser[1]
+    else:
+        return "endpoint not known"

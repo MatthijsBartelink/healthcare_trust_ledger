@@ -45,3 +45,9 @@ def decEndorserCount(endpoint):
     endorsercount = findEndorserCount(endpoint)
     with sl.connect('whichledgers.db') as con:
         data = con.execute("UPDATE LEDGER SET count = ? WHERE name = ?", (endorsercount - 1, endpoint))
+
+def getEndorserById(endpoint, id):
+    with sl.connect(str(endpoint)+'.db') as con:
+        data = con.execute("SELECT * FROM ENDORSER WHERE id = ?", (id, ))
+        for line in data:
+            return line
