@@ -35,12 +35,6 @@ def getEndpointContext(endpoint):
 def addBlock(block, endpoint):
 
     context = getEndpointContext(endpoint)
-    # ledgerdata = ""
-    # with sl.connect('trustledgers.db') as con:
-    #     data = con.execute("SELECT * FROM LEDGERS WHERE name = ?", endpoint)
-    #     for line in data:
-    #         ledgerdata = line
-    #     con.execute("UPDATE LEDGERS SET length = ? WHERE name = ?", (ledgerdata[2] + 1, endpoint))
 
     with sl.connect(str(endpoint)+".db") as con:
         # increment length of blockchain by one
@@ -48,5 +42,11 @@ def addBlock(block, endpoint):
         # add block to db
         con.execute("INSERT INTO BLOCK (id, block_json) values (?, ?)", (context[2]+1, block.toJSON()))
 
-# def isInLedgers(con, endpoint):
-#     data = con.execute()
+def isInLedgers(endpoint):
+    with sl.connect('trustledgers.db') as con:
+        data = con.execute('SELECT * FROM LEDGERS WHERE name=?', (endpoint, ))
+        for line in data:
+            if line[1] == endpoint:
+                return True
+
+    return False
