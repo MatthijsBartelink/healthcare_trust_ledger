@@ -3,8 +3,9 @@ from hashlib import sha256
 
 class Block:
 
-    def __init__(self, index, timestamp, logicaltimestamp, previous_hash, endorser, endpoint, nonce=0, positive=True):
+    def __init__(self, index, operation, timestamp, logicaltimestamp, previous_hash, endorser, endpoint, nonce=0, positive=True):
         self.index = index
+        self.operation = operation
         self.timestamp = timestamp
         self.logicaltimestamp = logicaltimestamp
         self.previous_hash = previous_hash

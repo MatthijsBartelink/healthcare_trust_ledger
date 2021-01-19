@@ -3,6 +3,8 @@ This file contains simple getters and setters for database interaction. Any
 repeated SQL query should be implemented here.
 """
 import sqlite3 as sl
+import JSON
+from block import Block
 
 def getContext():
     context = ""
@@ -42,6 +44,12 @@ def addBlock(block, endpoint):
         # add block to db
         con.execute("INSERT INTO BLOCK (id, block_json) values (?, ?)", (context[2]+1, block.toJSON()))
 
+def getBlock(id, endpoint):
+    with sl.connect(str(endpoint)+".db") as con:
+        data = con.execute("SELECT * FROM BLOCK WHERE id = ?", (id, ))
+        for line in data:
+            return blockfromJSON(line[1])
+
 def isInLedgers(endpoint):
     with sl.connect('trustledgers.db') as con:
         data = con.execute('SELECT * FROM LEDGERS WHERE name=?', (endpoint, ))
@@ -50,3 +58,9 @@ def isInLedgers(endpoint):
                 return True
 
     return False
+
+def blockfromJSON(blockJSON):
+    dictversion = JSON.loads(blockJSON)
+    return block(dictversion['index'], dictversion['operation'], dictversion['timestamp'], dictversion['logicaltimestamp'],
+                 dictversion['previous_hash'], dictversion['endorser'], dictversion['endpoint'],
+                 dictversion['nonce'], dictversion['positive'])

@@ -9,6 +9,7 @@ from datetime import datetime
 from hashlib import sha256
 
 discovery_server = "http://145.100.104.48:5000"
+verify_with_count = 7
 
 app = Flask(__name__)
 
@@ -29,7 +30,7 @@ def check(endpoint):
     """
     return 'Not yet implemented'
 
-@app.route('/endorse/<endpoint>')
+@app.route('/trust/<endpoint>')
 def trust(endpoint):
     """
     Establish this whitebox as a endorser for endpoint.
@@ -41,19 +42,106 @@ def trust(endpoint):
         #Ledger is locally available, therefore the whitebox already endorses endpoint
         return "Whitebox is already an endorser"
     else:
-        #TODO: handle ledger which exists elsewhere
-        msg = setupNewLedger(endpoint)
-        # TODO: register new ledger  with nameserver
-        request_url = "{}/register/{}&{}".format(discovery_server, context[1], endpoint)
+        request_url = "{}/getnumendorsers/{}".format(discovery_server, endpoint)
         r = requests.get(request_url)
-        if r.status_code == 200:
-            if r.text == "now endorsing endpoint " + str(endpoint):
-                print("Registration succeeded, but other registration already exists. Should now discover other endorser, but this is not implemented")
+        if r.status_code != 200:
+            return "Discovery server error, endorse failed"
+
+        if r.text = "0":
+            #entirely new ledger
+            msg = setupNewLedger(endpoint)
+            request_url = "{}/register/{}&{}".format(discovery_server, context[1], endpoint)
+            r = requests.get(request_url)
+            if r.status_code == 200:
+                if r.text == "now endorsing endpoint " + str(endpoint):
+                    print("Registration succeeded, but other registration already exists. Should now discover other endorser, but this is not implemented")
+            else:
+                print("Registration failed. Should be retried automatically, but this is not implemented")
+            return msg
         else:
-            print("Registration failed. Should be retried automatically, but this is not implemented")
-        return msg
+            #ledger exists elsewhere
+            other_endorsers_count = int(r.text)
+            references_used = other_endorsers_count
+            if references_used > verify_with_count:
+                references_used = verify_with_count
+
+            reference = downloadremotereferences(endpoint, 1)[0]
+
+            downloadremoteleder(endpoint, reference)
+
+            if validatestoredledger(endpoint, verify_with_count):
+                # make ledgers entry
+                with sl.connect('trustledgers.db') as con:
+                    con.execute('INSERT INTO LEDGERS (id, name) values(?, ?)', (context[2]+1, endpoint))
+                dbinterface.setNumledgers(context[2]+1)
+
+                #TODO: register with other whiteboxes
+                #TODO: register with discovery_server
+                request_url = "{}/register/{}&{}".format(discovery_server, context[1], endpoint)
+                r = requests.get(request_url)
+                if r.status_code == 200:
+                    return "Trust-link succesfully established"
+                else:
+                    return "Trust-link establishment succeeded, but discovery server registration failed. Should retry automatically, but this is not implemented"
+            else:
+                return "Trust-link failed, ledger verification failed"
+
 
     return 'trust failed'
+
+@app.route('/downloadledger/<endpoint>')
+def downloadledger(endpoint):
+    return send_file('./{}.db'.format(endpoint), attachment_filename='{}.db'.format(endpoint))
+
+@app.route('/getlastblockhash/<endpoint>')
+def getlastblockhash(endpoint):
+    context = dbinterface.getEndpointContext(endpoint)
+    if context[1] != endpoint:
+        return False
+    lastblock = dbinterface.getBlock(context[2])
+    return lastblock.compute_hash()
+
+def downloadremoteleder(endpoint, reference):
+    request_url = '{}/downloadledger/{}'.format(discovery_server, reference)
+    r = requests.get(request_url)
+    open('{}.db'.format(endpoint), 'wb').write(r.content)
+
+def downloadremotereferences(endpoint, count):
+    references = []
+    i = 0
+    while i < count:
+        request_url = '{}/getreference/{}'.format(discovery_server, endpoint)
+        r = requests.get(request_url)
+        if r.status_code != 200:
+            return "Discovery server error, reference get failed"
+        reference = r.text
+        if reference not in references:
+            references.append(reference)
+            i += 1
+    return references
+
+def validatestoredledger(endpoint, endorsercount):
+    context = dbinterface.getEndpointContext(endpoint)
+    if context[1] != endpoint:
+        return False
+    lastblock = dbinterface.getBlock(context[2])
+    lasthash = lastblock.compute_hash()
+
+    #TODO: local hash validation
+
+    # Remote validation
+    references = downloadremotereferences(endpoint, endorsercount)
+    successes = 0
+    for reference in references:
+        request_url = "{}/getlastblockhash/{}".format(reference, endpoint)
+        r = requests.get(request_url)
+        if r.text == lasthash:
+            successes += 1
+
+    if successes > endorsercount/2:
+        return True
+    return False
+
 
 
 def setupNewLedger(endpoint):
@@ -87,7 +175,7 @@ def setupNewLedger(endpoint):
     timestamp = datetime.timestamp(now)
     keyhash = sha256(endorsed_key.encode()).hexdigest()
 
-    newblock = Block(1, timestamp, 1, keyhash, context[1], endpoint)
+    newblock = Block(1, "ADD", timestamp, 1, keyhash, context[1], endpoint)
     dbinterface.addBlock(newblock, endpoint)
 
     return "new trust link and ledger for {}".format(endpoint)
