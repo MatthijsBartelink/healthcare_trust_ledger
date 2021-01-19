@@ -8,12 +8,11 @@ import requests
 from datetime import datetime
 from hashlib import sha256
 
+discovery_server = "http://145.100.104.48:5000"
+
 app = Flask(__name__)
 
 endorsed_key = "This is a replacement for an actual key. Theoretically, any text could be guaranteed this way"
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0")
 
 @app.route('/')
 def index():
@@ -36,6 +35,8 @@ def trust(endpoint):
     Establish this whitebox as a endorser for endpoint.
     """
 
+    context = dbinterface.getContext()
+
     if dbinterface.isInLedgers(endpoint):
         #Ledger is locally available, therefore the whitebox already endorses endpoint
         return "Whitebox is already an endorser"
@@ -43,9 +44,16 @@ def trust(endpoint):
         #TODO: handle ledger which exists elsewhere
         msg = setupNewLedger(endpoint)
         # TODO: register new ledger  with nameserver
+        request_url = "{}/register/{}&{}".format(discovery_server, context[1], endpoint)
+        r = requests.get(request_url)
+        if r.status_code == 200:
+            if r.text == "now endorsing endpoint " + str(endpoint):
+                print("Registration succeeded, but other registration already exists. Should now discover other endorser, but this is not implemented")
+        else:
+            print("Registration failed. Should be retried automatically, but this is not implemented")
         return msg
 
-    return 'Not yet implemented'
+    return 'trust failed'
 
 
 def setupNewLedger(endpoint):
@@ -83,3 +91,6 @@ def setupNewLedger(endpoint):
     dbinterface.addBlock(newblock, endpoint)
 
     return "new trust link and ledger for {}".format(endpoint)
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0")
