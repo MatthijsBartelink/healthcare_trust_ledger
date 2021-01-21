@@ -47,7 +47,7 @@ def trust(endpoint):
         if r.status_code != 200:
             return "Discovery server error, endorse failed"
 
-        if r.text = "0":
+        if r.text == "0":
             #entirely new ledger
             msg = setupNewLedger(endpoint)
             request_url = "{}/register/{}&{}".format(discovery_server, context[1], endpoint)

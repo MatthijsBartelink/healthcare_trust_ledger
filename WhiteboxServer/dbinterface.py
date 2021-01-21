@@ -3,7 +3,7 @@ This file contains simple getters and setters for database interaction. Any
 repeated SQL query should be implemented here.
 """
 import sqlite3 as sl
-import JSON
+import json
 from block import Block
 
 def getContext():
@@ -60,7 +60,7 @@ def isInLedgers(endpoint):
     return False
 
 def blockfromJSON(blockJSON):
-    dictversion = JSON.loads(blockJSON)
+    dictversion = json.loads(blockJSON)
     return block(dictversion['index'], dictversion['operation'], dictversion['timestamp'], dictversion['logicaltimestamp'],
                  dictversion['previous_hash'], dictversion['endorser'], dictversion['endpoint'],
                  dictversion['nonce'], dictversion['positive'])
