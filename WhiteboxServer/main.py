@@ -130,6 +130,7 @@ def downloadremoteledger(endpoint, reference):
 def downloadremotereferences(endpoint, count):
     references = []
     i = 0
+    print("in while loop")
     while i < count:
         request_url = '{}/getreference/{}'.format(discovery_server, endpoint)
         r = requests.get(request_url)
@@ -139,6 +140,7 @@ def downloadremotereferences(endpoint, count):
         if reference not in references:
             references.append(reference)
             i += 1
+    print("leaves while loop")
     return references
 
 def validatestoredledger(endpoint, endorsercount):
