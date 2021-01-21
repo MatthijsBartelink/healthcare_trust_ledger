@@ -145,7 +145,7 @@ def validatestoredledger(endpoint, endorsercount):
     context = dbinterface.getEndpointContext(endpoint)
     if context[1] != endpoint:
         return False
-    lastblock = dbinterface.getBlock(context[2])
+    lastblock = dbinterface.getBlock(context[2], endpoint)
     lasthash = lastblock.compute_hash()
 
     #TODO: local hash validation
