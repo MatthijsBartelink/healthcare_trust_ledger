@@ -69,7 +69,7 @@ def trust(endpoint):
 
             downloadremoteledger(endpoint, reference)
 
-            if validatestoredledger(endpoint, verify_with_count):
+            if validatestoredledger(endpoint, references_used):
                 # make ledgers entry
                 with sl.connect('trustledgers.db') as con:
                     con.execute('INSERT INTO LEDGERS (id, name) values(?, ?)', (context[2]+1, endpoint))
@@ -130,7 +130,7 @@ def downloadremoteledger(endpoint, reference):
 def downloadremotereferences(endpoint, count):
     references = []
     i = 0
-    print("in while loop")
+    print("in while loop, count = {}".format(count))
     while i < count:
         request_url = '{}/getreference/{}'.format(discovery_server, endpoint)
         r = requests.get(request_url)
