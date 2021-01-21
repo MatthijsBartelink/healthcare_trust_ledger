@@ -67,7 +67,7 @@ def trust(endpoint):
 
             reference = downloadremotereferences(endpoint, 1)[0]
 
-            downloadremoteleder(endpoint, reference)
+            downloadremoteledger(endpoint, reference)
 
             if validatestoredledger(endpoint, verify_with_count):
                 # make ledgers entry
@@ -101,7 +101,25 @@ def getlastblockhash(endpoint):
     lastblock = dbinterface.getBlock(context[2])
     return lastblock.compute_hash()
 
-def downloadremoteleder(endpoint, reference):
+@app.route('/presentblock/<endpoint>&<block>')
+def presentblock(endpoint, blockJSON):
+    block = dbinterface.blockfromJSON(blockJSON)
+
+    if block.endpoint != endpoint:
+        return "block rejected, endpoint doesn't match"
+    if block.operation != "ADD" and block.operation != "REV" and block.operation != "SMP":
+        return "block rejected, operation unknown"
+    if block.timestamp #TODO: validate timestamp
+
+    dbinterface.getBlock(block.id, endpoint)
+    # if block.previous_hash
+
+    #TODO: reject block for other reasons
+
+    #TODO: store block if accepted
+    return "block accepted"
+
+def downloadremoteledger(endpoint, reference):
     request_url = '{}/downloadledger/{}'.format(discovery_server, reference)
     r = requests.get(request_url)
     open('{}.db'.format(endpoint), 'wb').write(r.content)
