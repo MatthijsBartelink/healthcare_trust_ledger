@@ -156,7 +156,7 @@ def validatestoredledger(endpoint, endorsercount):
     references = downloadremotereferences(endpoint, endorsercount)
     successes = 0
     for reference in references:
-        request_url = "{}/getlastblockhash/{}".format(reference, endpoint)
+        request_url = "http://{}/getlastblockhash/{}".format(reference, endpoint)
         r = requests.get(request_url)
         if r.text == lasthash:
             successes += 1
