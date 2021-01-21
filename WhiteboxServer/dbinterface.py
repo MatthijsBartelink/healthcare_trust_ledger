@@ -61,6 +61,6 @@ def isInLedgers(endpoint):
 
 def blockfromJSON(blockJSON):
     dictversion = json.loads(blockJSON)
-    return block(dictversion['index'], dictversion['operation'], dictversion['timestamp'], dictversion['logicaltimestamp'],
+    return Block(dictversion['index'], dictversion['operation'], dictversion['timestamp'], dictversion['logicaltimestamp'],
                  dictversion['previous_hash'], dictversion['endorser'], dictversion['endpoint'],
                  dictversion['nonce'], dictversion['positive'])
