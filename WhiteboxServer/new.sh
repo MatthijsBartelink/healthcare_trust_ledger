@@ -1,3 +1,5 @@
-rm *.db
-python3 setup.py
-python3 main.py
+#!/bin/bash
+
+rm *.db;
+python3 setup.py;
+python3 main.py;
