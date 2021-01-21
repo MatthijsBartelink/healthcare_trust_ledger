@@ -4,7 +4,7 @@ Setup for the db. Should be run only once, before ever starting the server.
 import sqlite3 as sl
 
 con = sl.connect('trustledgers.db')
-name = "192.168.2.2:5000"
+name = "192.168.2.11:5000"
 
 with con:
     # make ledgers table

@@ -109,7 +109,7 @@ def presentblock(endpoint, blockJSON):
         return "block rejected, endpoint doesn't match"
     if block.operation != "ADD" and block.operation != "REV" and block.operation != "SMP":
         return "block rejected, operation unknown"
-    if block.timestamp #TODO: validate timestamp
+    # if block.timestamp #TODO: validate timestamp
 
     dbinterface.getBlock(block.id, endpoint)
     # if block.previous_hash
