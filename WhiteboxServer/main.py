@@ -158,6 +158,7 @@ def validatestoredledger(endpoint, endorsercount):
     for reference in references:
         request_url = "http://{}/getlastblockhash/{}".format(reference, endpoint)
         r = requests.get(request_url)
+        print("received hash: {} my hash: {}".format(r.text, lasthash))
         if r.text == lasthash:
             successes += 1
 
