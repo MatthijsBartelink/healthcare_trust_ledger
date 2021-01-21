@@ -120,9 +120,12 @@ def presentblock(endpoint, blockJSON):
     return "block accepted"
 
 def downloadremoteledger(endpoint, reference):
-    request_url = '{}/downloadledger/{}'.format(discovery_server, reference)
+    request_url = 'http://{}/downloadledger/{}'.format(reference, endpoint)
     r = requests.get(request_url)
-    open('{}.db'.format(endpoint), 'wb').write(r.content)
+    if r.status_code == 200:
+        open('{}.db'.format(endpoint), 'wb').write(r.content)
+    else:
+        print("ledger download failed. Operation should now stop")
 
 def downloadremotereferences(endpoint, count):
     references = []
