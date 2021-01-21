@@ -1,7 +1,7 @@
 from block import Block
 import dbinterface
 
-from flask import Flask
+from flask import Flask, send_file
 import sqlite3 as sl
 import requests
 
