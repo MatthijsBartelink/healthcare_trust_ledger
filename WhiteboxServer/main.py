@@ -50,7 +50,7 @@ def trust(endpoint):
         if r.text == "0":
             #entirely new ledger
             msg = setupNewLedger(endpoint)
-            request_url = "{}/register/{}&{}".format(discovery_server, context[1], endpoint)
+            request_url = "{}/register@{}&{}".format(discovery_server, context[1], endpoint)
             r = requests.get(request_url)
             if r.status_code == 200:
                 if r.text == "now endorsing endpoint " + str(endpoint):
@@ -77,7 +77,7 @@ def trust(endpoint):
 
                 #TODO: register with other whiteboxes
                 #TODO: register with discovery_server
-                request_url = "{}/register/{}&{}".format(discovery_server, context[1], endpoint)
+                request_url = "{}/register@{}&{}".format(discovery_server, context[1], endpoint)
                 r = requests.get(request_url)
                 if r.status_code == 200:
                     return "Trust-link succesfully established"

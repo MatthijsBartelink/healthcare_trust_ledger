@@ -16,7 +16,7 @@ def index():
     """
     return 'Index Page, not used'
 
-@app.route('/register/<myaddress>&<endpoint>')
+@app.route('/register@<myaddress>&<endpoint>')
 def register(myaddress, endpoint):
     """
     Register myaddress as an endorser for endpoint.
@@ -48,7 +48,7 @@ def register(myaddress, endpoint):
         dbinterface.incEndorserCount(endpoint)
         return "Registered new endpoint"
 
-@app.route('/deregister/<myaddress>&<endpoint>')
+@app.route('/deregister@<myaddress>&<endpoint>')
 def deregister(myaddress, endpoint):
     # Omitted in this prototype: Verify that myaddress is a valid whitebox and actual sender
     if dbinterface.knownEndpoint(endpoint):
