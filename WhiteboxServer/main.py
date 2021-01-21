@@ -98,7 +98,7 @@ def getlastblockhash(endpoint):
     context = dbinterface.getEndpointContext(endpoint)
     if context[1] != endpoint:
         return False
-    lastblock = dbinterface.getBlock(context[2])
+    lastblock = dbinterface.getBlock(context[2], endpoint)
     return lastblock.compute_hash()
 
 @app.route('/presentblock/<endpoint>&<block>')
