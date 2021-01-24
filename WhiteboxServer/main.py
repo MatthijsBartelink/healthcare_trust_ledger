@@ -113,7 +113,7 @@ def pushblocktopeers(endpoint, block, tries):
         for peer in peerlist:
             if peer[1] == myaddress:
                 continue
-            request_url = "http://{}/presentblock/{}&{}".format(peer[1], endpoint, my_registration_block.toJSON())
+            request_url = "http://{}/presentblock/{}&{}".format(peer[1], endpoint, block.toJSON())
             r = requests.get(request_url)
             if r.status_code != 200 or r.text != "block accepted":
                 retrylist.append(peer)
