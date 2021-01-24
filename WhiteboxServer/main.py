@@ -84,7 +84,7 @@ def trust(endpoint):
                 # add block to own ledger
                 dbinterface.addBlock(my_registration_block, endpoint)
 
-                if not pushblocktopeers(endpoint, my_registration_block, 5):
+                if not pushblocktopeers(endpoint, my_registration_block, 2):
                     return "Trust-link failed, coulnd't establish with peers. Should be retried later automatically, but this is not implemented"
 
                 # register with discovery_server
@@ -117,7 +117,7 @@ def pushblocktopeers(endpoint, block, tries):
             r = requests.get(request_url)
             if r.status_code != 200 or r.text != "block accepted":
                 retrylist.append(peer)
-                print("push failed, message: {}".format(r.text))
+                print("push failed, status code; {} message: {}".format(r.status_code, r.text))
                 #TODO: handle rejection for different reasons differently.
                 # send previous block for hash mismatch. insist for time if certain
 
