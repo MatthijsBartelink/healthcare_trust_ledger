@@ -5,7 +5,7 @@ from flask import Flask, send_file
 import sqlite3 as sl
 import requests
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from hashlib import sha256
 
 discovery_server = "http://145.100.104.48:5000"
@@ -145,7 +145,7 @@ def getlastblockhash(endpoint):
 @app.route('/presentblock/<endpoint>&<blockJSON>')
 def presentblock(endpoint, blockJSON):
     block = dbinterface.blockfromJSON(blockJSON)
-    timedelta = datetime.timedelta(minutes=30)
+    timedelta = timedelta(minutes=30)
     context = getEndpointContext(block.endpoint)
 
     # We should check if the message came from the endorser. If not, we should
