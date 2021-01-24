@@ -145,7 +145,7 @@ def getlastblockhash(endpoint):
 @app.route('/presentblock/<endpoint>&<blockJSON>')
 def presentblock(endpoint, blockJSON):
     block = dbinterface.blockfromJSON(blockJSON)
-    timedelta = timedelta(minutes=30)
+    halfhour = timedelta(minutes=30)
     context = getEndpointContext(block.endpoint)
 
     # We should check if the message came from the endorser. If not, we should
@@ -159,8 +159,8 @@ def presentblock(endpoint, blockJSON):
         return "block rejected, lacking previous blocks"
     if block.operation != "ADD" and block.operation != "REV" and block.operation != "SMP":
         return "block rejected, operation unknown"
-    if (datetime.now - timedelta > datetime.fromtimestamp(block.timestamp) or
-        datetime.now + timedelta <  datetime.fromtimestamp(block.timestamp)):
+    if (datetime.now - halfhour > datetime.fromtimestamp(block.timestamp) or
+        datetime.now + halfhour <  datetime.fromtimestamp(block.timestamp)):
         return "block rejected, timestamp off"
     if block.previous_hash != dbinterface.getblock(block.index - 1, endpoint):
         return "block rejected, hash mismatch"
