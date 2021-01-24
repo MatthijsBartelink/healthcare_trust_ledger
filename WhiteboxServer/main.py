@@ -146,7 +146,7 @@ def getlastblockhash(endpoint):
 def presentblock(endpoint, blockJSON):
     block = dbinterface.blockfromJSON(blockJSON)
     halfhour = timedelta(minutes=30)
-    context = getEndpointContext(block.endpoint)
+    context = dbinterface.getEndpointContext(block.endpoint)
 
     # We should check if the message came from the endorser. If not, we should
     # check with the endorser in the block. This is not implemented due to time
