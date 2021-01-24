@@ -163,7 +163,7 @@ def presentblock(endpoint, blockJSON):
     if (datetime.now() - halfhour > datetime.fromtimestamp(block.timestamp) or
         datetime.now() + halfhour <  datetime.fromtimestamp(block.timestamp)):
         return "block rejected, timestamp off"
-    if block.previous_hash != dbinterface.getBlock(block.index - 1, endpoint):
+    if block.previous_hash != dbinterface.getBlock(block.index - 1, endpoint).compute_hash():
         return "block rejected, hash mismatch"
     #TODO: reject block if a copy is already known
     #TODO: reject block for other reasons
