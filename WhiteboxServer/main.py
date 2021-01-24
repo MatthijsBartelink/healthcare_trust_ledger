@@ -148,6 +148,7 @@ def presentblock(endpoint, blockJSON):
     block = dbinterface.blockfromJSON(blockJSON)
     halfhour = timedelta(minutes=30)
     context = dbinterface.getEndpointContext(block.endpoint)
+    print("chain length before acceptance is: {}".format(context[2]))
 
     # We should check if the message came from the endorser. If not, we should
     # check with the endorser in the block. This is not implemented due to time
