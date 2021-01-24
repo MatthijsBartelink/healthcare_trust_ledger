@@ -84,7 +84,7 @@ def trust(endpoint):
                 # add block to own ledger
                 dbinterface.addBlock(my_registration_block, endpoint)
 
-                if not pushblocktopeers(endpoint, my_registration_block):
+                if not pushblocktopeers(endpoint, my_registration_block, 5):
                     return "Trust-link failed, coulnd't establish with peers. Should be retried later automatically, but this is not implemented"
 
                 # register with discovery_server
