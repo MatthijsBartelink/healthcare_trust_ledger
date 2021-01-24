@@ -85,7 +85,7 @@ def getallblocks(endpoint):
 def performblockoperation(block):
     if block.operation == "ADD" :
         positivenum = 0
-        if positive:
+        if block.positive:
             positivenum = 1
         with sl.connect(str(endpoint)+".db") as con:
             con.execute("INSERT INTO LEDGERENTRY (whitebox, positive, block_id) values(?, ?, ?)", (block.endorser, positivenum, block.index))
