@@ -142,7 +142,7 @@ def getlastblockhash(endpoint):
     lastblock = dbinterface.getBlock(context[2], endpoint)
     return lastblock.compute_hash()
 
-@app.route('/presentblock/<endpoint>&<block>')
+@app.route('/presentblock/<endpoint>&<blockJSON>')
 def presentblock(endpoint, blockJSON):
     block = dbinterface.blockfromJSON(blockJSON)
     timedelta = datetime.timedelta(minutes=30)
