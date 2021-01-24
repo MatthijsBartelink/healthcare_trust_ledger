@@ -78,7 +78,6 @@ def trust(endpoint):
                 #TODO: register with other whiteboxes
 
                 #make registration block
-                timestamp = datetime.timestamp(now)
                 prev_block_hash = dbinterface.getBlock(context[1]-1, endpoint).compute_hash()
                 my_registration_block = Block(1, "ADD", datetime.now(), 1, prev_block_hash, context[1], endpoint)
 
