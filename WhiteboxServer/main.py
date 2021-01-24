@@ -82,7 +82,7 @@ def trust(endpoint):
                 my_registration_block = Block(1, "ADD", datetime.now(), 1, prev_block_hash, context[1], endpoint)
 
                 # add block to own ledger
-                dbinterface.addBlock(newblock, endpoint)
+                dbinterface.addBlock(my_registration_block, endpoint)
 
                 if not pushblocktopeers(endpoint, my_registration_block):
                     return "Trust-link failed, coulnd't establish with peers. Should be retried later automatically, but this is not implemented"
