@@ -79,7 +79,7 @@ def trust(endpoint):
 
                 #make registration block
                 prev_block_hash = dbinterface.getBlock(endpointContext[2], endpoint).compute_hash()
-                my_registration_block = Block(1, "ADD", datetime.timestamp(datetime.now()), 1, prev_block_hash, context[1], endpoint)
+                my_registration_block = Block(endpointContext[2] + 1, "ADD", datetime.timestamp(datetime.now()), 1, prev_block_hash, context[1], endpoint)
 
                 # add block to own ledger
                 dbinterface.addBlock(my_registration_block, endpoint)
