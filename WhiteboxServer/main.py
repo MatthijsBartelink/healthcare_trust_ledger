@@ -117,6 +117,7 @@ def pushblocktopeers(endpoint, block, tries):
             r = requests.get(request_url)
             if r.status_code != 200 or r.text != "block accepted":
                 retrylist.append(peer)
+                print("push failed, message: {}".format(r.text))
                 #TODO: handle rejection for different reasons differently.
                 # send previous block for hash mismatch. insist for time if certain
 
@@ -164,6 +165,7 @@ def presentblock(endpoint, blockJSON):
         return "block rejected, timestamp off"
     if block.previous_hash != dbinterface.getBlock(block.index - 1, endpoint):
         return "block rejected, hash mismatch"
+    #TODO: reject block if a copy is already known
     #TODO: reject block for other reasons
 
     #TODO: Drop blocks that may now be invalid, or reject block for stored block with precedent
