@@ -87,7 +87,7 @@ def performblockoperation(block):
         positivenum = 0
         if block.positive:
             positivenum = 1
-        with sl.connect(str(endpoint)+".db") as con:
+        with sl.connect(str(block.endpoint)+".db") as con:
             con.execute("INSERT INTO LEDGERENTRY (whitebox, positive, block_id) values(?, ?, ?)", (block.endorser, positivenum, block.index))
     elif block.operation == "REV":
         print("block with revocation operation. Currently not implemented")
