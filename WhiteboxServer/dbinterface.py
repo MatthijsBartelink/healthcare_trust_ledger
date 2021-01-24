@@ -71,7 +71,7 @@ def getcompleteledger(endpoint):
         data = con.execute('SELECT * FROM LEDGERENTRY ORDER BY id ASC')
         entrylist = []
         for line in data:
-            entrylist.append(blockfromJSON(line))
+            entrylist.append(blockfromJSON(line[1]))
         return entrylist
 
 def getallblocks(endpoint):
