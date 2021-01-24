@@ -75,7 +75,7 @@ def trust(endpoint):
                     con.execute('INSERT INTO LEDGERS (id, name) values(?, ?)', (context[2]+1, endpoint))
                 dbinterface.setNumledgers(context[2]+1)
 
-                endpointContext = getEndpointContext(endpoint)
+                endpointContext = dbinterface.getEndpointContext(endpoint)
 
                 #make registration block
                 prev_block_hash = dbinterface.getBlock(endpointContext[2], endpoint).compute_hash()
