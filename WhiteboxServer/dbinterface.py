@@ -35,14 +35,15 @@ def getEndpointContext(endpoint):
     return context
 
 def addBlock(block, endpoint):
-
     context = getEndpointContext(endpoint)
 
     with sl.connect(str(endpoint)+".db") as con:
         # increment length of blockchain by one
-        con.execute("UPDATE CONTEXT SET length = ? WHERE id = 1", (context[2]+1, ))
+        if block.index == context[2]+1:
+            con.execute("UPDATE CONTEXT SET length = ? WHERE id = 1", (context[2]+1, ))
         # add block to db
-        con.execute("INSERT INTO BLOCK (id, block_json) values (?, ?)", (context[2]+1, block.toJSON()))
+            con.execute("INSERT INTO BLOCK (id, block_json) values (?, ?)", (context[2]+1, block.toJSON()))
+    performblockoperation(block)
 
 def getBlock(id, endpoint):
     with sl.connect(str(endpoint)+".db") as con:
@@ -64,3 +65,33 @@ def blockfromJSON(blockJSON):
     return Block(dictversion['index'], dictversion['operation'], dictversion['timestamp'], dictversion['logicaltimestamp'],
                  dictversion['previous_hash'], dictversion['endorser'], dictversion['endpoint'],
                  dictversion['nonce'], dictversion['positive'])
+
+def getcompleteledger(endpoint):
+    with sl.connect(str(endpoint)+".db") as con:
+        data = con.execute('SELECT * FROM LEDGERENTRY ORDER BY id ASC')
+        entrylist = []
+        for line in data:
+            entrylist.append(blockfromJSON(line))
+        return entrylist
+
+def getallblocks(endpoint):
+    with sl.connect(str(endpoint)+".db") as con:
+        data = con.execute('SELECT * FROM BLOCK ORDER BY id ASC')
+        blocklist = []
+        for line in data:
+            blocklist.append(blockfromJSON(line[1]))
+        return blocklist
+
+def performblockoperation(block):
+    if block.operation == "ADD" :
+        positivenum = 0
+        if positive:
+            positivenum = 1
+        with sl.connect(str(endpoint)+".db") as con:
+            con.execute("INSERT INTO LEDGERENTRY (whitebox, positive, block_id) values(?, ?, ?)", (block.endorser, positivenum, block.index))
+    elif block.operation == "REV":
+        print("block with revocation operation. Currently not implemented")
+    elif block.operation != "SMP":
+        print("block with simplification operation. Currently not implemented")
+    else:
+        print("Block with unrecognized operation. Something has gone very wrong.")
