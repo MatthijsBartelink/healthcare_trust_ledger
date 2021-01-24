@@ -159,8 +159,8 @@ def presentblock(endpoint, blockJSON):
         return "block rejected, lacking previous blocks"
     if block.operation != "ADD" and block.operation != "REV" and block.operation != "SMP":
         return "block rejected, operation unknown"
-    if (datetime.now - halfhour > datetime.fromtimestamp(block.timestamp) or
-        datetime.now + halfhour <  datetime.fromtimestamp(block.timestamp)):
+    if (datetime.now() - halfhour > datetime.fromtimestamp(block.timestamp) or
+        datetime.now() + halfhour <  datetime.fromtimestamp(block.timestamp)):
         return "block rejected, timestamp off"
     if block.previous_hash != dbinterface.getblock(block.index - 1, endpoint):
         return "block rejected, hash mismatch"
