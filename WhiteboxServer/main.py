@@ -175,6 +175,7 @@ def presentblock(endpoint, blockJSON):
     else:
         #TODO: compare block with stored block for timestamp, find correct chain,
         # reject other chain.
+        print("index wrong")
         return "block accepted, but not stored(implementation)"
 
 def downloadremoteledger(endpoint, reference):
