@@ -120,6 +120,7 @@ def pushblocktopeers(endpoint, block, tries):
                 print("push failed, status code; {} message: {}".format(r.status_code, r.text))
                 #TODO: handle rejection for different reasons differently.
                 # send previous block for hash mismatch. insist for time if certain
+            peerlist = retrylist
 
     if len(retrylist) != 0:
         print("block push failed to {} peers".format(len(retrylist)))
