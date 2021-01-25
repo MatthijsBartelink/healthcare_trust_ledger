@@ -266,11 +266,11 @@ def presentblock(endpoint, blockJSON):
         return "block accepted, but not stored(implementation)"
 
 @app.route('/trustreport/<endpoint>')
-def gettrustreport(endpoint){
-"""
-Check to see if this whitebox is an endorser for endpoint. Returns metrics
-describing the trustworthyness of the endpoint.
-"""
+def gettrustreport(endpoint):
+    """
+    Check to see if this whitebox is an endorser for endpoint. Returns metrics
+    describing the trustworthyness of the endpoint.
+    """
     if not dbinterface.isInLedgers(endpoint):
         return "endpoint not know, no trust"
     # myaddress = dbinterface.getContext()[1]
