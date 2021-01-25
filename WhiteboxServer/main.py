@@ -286,7 +286,7 @@ def gettrustreport(endpoint):
             negative_trust_links += 1
 
     return "{}, {}".format(positive_trust_links, negative_trust_links)
-}
+
 
 def downloadremoteledger(endpoint, reference):
     request_url = 'http://{}/downloadledger/{}'.format(reference, endpoint)
