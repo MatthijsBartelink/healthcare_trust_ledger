@@ -92,8 +92,16 @@ def performblockoperation(block):
         with sl.connect(str(block.endpoint)+".db") as con:
             con.execute("INSERT INTO LEDGERENTRY (whitebox, positive, block_id) values(?, ?, ?)", (block.endorser, positivenum, block.index))
     elif block.operation == "REV":
-        print("block with revocation operation. Currently not implemented")
+        with sl.connect(str(block.endpoint)+".db") as con:
+            con.execute("DELETE FROM LEDGERENTRY WHERE whitebox = ?", (block.endorser, ))
     elif block.operation != "SMP":
         print("block with simplification operation. Currently not implemented")
     else:
         print("Block with unrecognized operation. Something has gone very wrong.")
+
+
+def deleteLedgerEntry(endpoint):
+    context = getcontext()
+    with sl.connect('trustledgers.db') as con:
+        con.execute('DELETE FROM LEDGERS WHERE name=?', (endpoint, ))
+        con.execute("UPDATE ENVIRONMENT SET num_ledgers = ? WHERE id = ?", (context[2] - 1, 1))

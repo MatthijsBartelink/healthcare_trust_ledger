@@ -7,6 +7,7 @@ import requests
 
 from datetime import datetime, timedelta
 from hashlib import sha256
+import os
 
 discovery_server = "http://145.100.104.48:5000"
 verify_with_count = 7
@@ -100,6 +101,28 @@ def trust(endpoint):
 
     return 'trust failed'
 
+@app.route('/revoketrust/<endpoint>')
+def revoketrust(endpoint):
+
+    context = dbinterface.getContext()
+    endpointContext = dbinterface.getEndpointContext(endpoint)
+
+    if dbinterface.isInLedgers(endpoint):
+        prev_block_hash = dbinterface.getBlock(endpointContext[2], endpoint).compute_hash()
+        my_registration_block = Block(endpointContext[2] + 1, "REV", datetime.timestamp(datetime.now()), 1, prev_block_hash, context[1], endpoint)
+
+        if pushblocktopeers(endpoint, my_registration_block, 3):
+            dbinterface.addBlock(my_registration_block, endpoint)
+            dbinterface.deleteLedgerEntry(endpoint)
+            os.remove("{}.db".format(endpoint))
+            return "Trust succesfully revoked"
+        else:
+            return "block push to peers failed. Revoke failed."
+
+    else:
+        return "endpoint {} not known, no trust exists to be revoked".format(endpoint)
+
+
 def pushblocktopeers(endpoint, block, tries):
     """
     Push a block to all peers for a given endpoint.
@@ -120,6 +143,7 @@ def pushblocktopeers(endpoint, block, tries):
                 print("push failed, status code; {} message: {}".format(r.status_code, r.text))
                 #TODO: handle rejection for different reasons differently.
                 # send previous block for hash mismatch. insist for time if certain
+                # This is the place to implement most consensus logic
             peerlist = retrylist
 
     if len(retrylist) != 0:
@@ -155,7 +179,8 @@ def presentblock(endpoint, blockJSON):
     # check with the endorser in the block. This is not implemented due to time
     # constraints.
 
-    # TODO: check if endpoint is known
+    if not dbinterface.isInLedgers(endpoint):
+        return "block rejected, endpoint not known"
     if block.endpoint != endpoint:
         return "block rejected, endpoint doesn't match"
     if block.index > context[2] + 1:
@@ -228,8 +253,6 @@ def validatestoredledger(endpoint, endorsercount):
     if successes > endorsercount/2:
         return True
     return False
-
-
 
 def setupNewLedger(endpoint):
     """Creates a new ledger where none yet exist, remote or local."""
