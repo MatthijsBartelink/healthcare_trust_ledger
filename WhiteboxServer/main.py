@@ -7,10 +7,12 @@ import requests
 
 from datetime import datetime, timedelta
 from hashlib import sha256
+from statistics import median
 import os
 
 discovery_server = "http://145.100.104.48:5000"
 verify_with_count = 7
+security_parameter = 5
 
 app = Flask(__name__)
 
@@ -25,11 +27,64 @@ def index():
 
 @app.route('/check/<endpoint>')
 def check(endpoint):
-    """
-    Check to see if this whitebox is an endorser for endpoint. Returns metrics
-    describing the trustworthyness of the endpoint.
-    """
-    return 'Not yet implemented'
+"""
+check to see if endpoint should be considered trustworthy. Returns summary of
+trust reports from other whiteboxes.
+"""
+
+    request_url = "{}/getnumendorsers/{}".format(discovery_server, endpoint)
+    r = requests.get(request_url)
+    if r.status_code != 200:
+        return "Discovery server error, check failed"
+
+    if r.text == "0":
+        return "No trust-links, not trustworthy"
+
+    reports_to_get = int(r.text)
+    num_peers = reports_to_get
+    if reports_to_get > security_parameter:
+        reports_to_get = security_parameter
+
+    # reports = []
+    positive_links = []
+    negative_links = []
+    references = downloadremotereferences(endpoint, reports_to_get)
+    failed = 0
+    for reference in references:
+        request_url = "http://{}/trustreport/{}".format(reference, endpoint)
+        r = requests.get(request_url)
+        if r.status_code != 200:
+            failed += 1
+            continue
+        if r.text !=
+        line = r.text.split(", ")
+        positive_links.append(line[0])
+        negative_links.append(line[1])
+
+    message = "Negative trust advice, not enough peers"
+
+    if reports_to_get == security_parameter:
+        if min(positive_links) > security_parameter:
+            if max(negative_links)  > num_peers*0.02:
+                message = "Negative trust advice, too many negative trust-links"
+            else:
+                message = "Positive trust advice, check succeeded"
+        else:
+            message = "Negative trust advice, peers report too few links"
+
+    summary = ("Trust Reports Summary:\n"
+               "Security Parameter: {}\n\n"
+               "Peers Reached: {}\n"
+               "Peers Failed: {}\n\n"
+               "Positive Trust-Links: {}\n"
+               "Median: {}\n\n"
+               "Negative Trust-Links: {}\n"
+               "Median: {}\n\n"
+               "{}")
+
+    return summary.format(security_parameter, reports_to_get - failed, failed,
+                          str(positive_links), median(positive_links),
+                          str(negative_links), median(negative_links), message)
 
 @app.route('/trust/<endpoint>')
 def trust(endpoint):
@@ -191,6 +246,7 @@ def presentblock(endpoint, blockJSON):
         datetime.now() + halfhour <  datetime.fromtimestamp(block.timestamp)):
         return "block rejected, timestamp off"
     if block.previous_hash != dbinterface.getBlock(block.index - 1, endpoint).compute_hash():
+        # previous block mismatch
         return "block rejected, hash mismatch"
     #TODO: reject block if a copy is already known
     #TODO: reject block for other reasons
@@ -206,6 +262,29 @@ def presentblock(endpoint, blockJSON):
         # reject other chain.
         print("index wrong: got {}, should be {}".format(block.index, context[2]+1))
         return "block accepted, but not stored(implementation)"
+
+@app.route('/trustreport/<endpoint>')
+def gettrustreport(endpoint){
+"""
+Check to see if this whitebox is an endorser for endpoint. Returns metrics
+describing the trustworthyness of the endpoint.
+"""
+    if not dbinterface.isInLedgers(endpoint):
+        return "endpoint not know, no trust"
+    # myaddress = dbinterface.getContext()[1]
+    peerlist = dbinterface.getcompleteledger(endpoint)
+    guarantor_number = len(peerlist)
+    positive_trust_links = 0
+    negative_trust_links = 0
+
+    for peer in peerlist:
+        if peerlist[2] == 1:
+            positive_trust_links += 1
+        else:
+            negative_trust_links += 1
+
+    return "{}, {}".format(positive_trust_links, negative_trust_links)
+}
 
 def downloadremoteledger(endpoint, reference):
     request_url = 'http://{}/downloadledger/{}'.format(reference, endpoint)
