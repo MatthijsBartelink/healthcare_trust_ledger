@@ -280,7 +280,7 @@ def gettrustreport(endpoint):
     negative_trust_links = 0
 
     for peer in peerlist:
-        if peerlist[2] == 1:
+        if peer[2] == 1:
             positive_trust_links += 1
         else:
             negative_trust_links += 1
