@@ -101,7 +101,7 @@ def performblockoperation(block):
 
 
 def deleteLedgerEntry(endpoint):
-    context = getcontext()
+    context = getContext()
     with sl.connect('trustledgers.db') as con:
         con.execute('DELETE FROM LEDGERS WHERE name=?', (endpoint, ))
         con.execute("UPDATE ENVIRONMENT SET num_ledgers = ? WHERE id = ?", (context[2] - 1, 1))
