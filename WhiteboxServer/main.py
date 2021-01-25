@@ -27,10 +27,10 @@ def index():
 
 @app.route('/check/<endpoint>')
 def check(endpoint):
-"""
-check to see if endpoint should be considered trustworthy. Returns summary of
-trust reports from other whiteboxes.
-"""
+    """
+    check to see if endpoint should be considered trustworthy. Returns summary of
+    trust reports from other whiteboxes.
+    """
 
     request_url = "{}/getnumendorsers/{}".format(discovery_server, endpoint)
     r = requests.get(request_url)
