@@ -56,10 +56,12 @@ def check(endpoint):
         if r.status_code != 200:
             failed += 1
             continue
-        if r.text !=
-        line = r.text.split(", ")
-        positive_links.append(line[0])
-        negative_links.append(line[1])
+        if r.text != "endpoint not know, no trust":
+            line = r.text.split(", ")
+            positive_links.append(line[0])
+            negative_links.append(line[1])
+        else:
+            failed += 1
 
     message = "Negative trust advice, not enough peers"
 
