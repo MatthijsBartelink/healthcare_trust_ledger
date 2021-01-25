@@ -58,8 +58,8 @@ def check(endpoint):
             continue
         if r.text != "endpoint not know, no trust":
             line = r.text.split(", ")
-            positive_links.append(line[0])
-            negative_links.append(line[1])
+            positive_links.append(int(line[0]))
+            negative_links.append(int(line[1]))
         else:
             failed += 1
 
