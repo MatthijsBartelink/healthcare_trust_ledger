@@ -247,9 +247,10 @@ def presentblock(endpoint, blockJSON):
     if (datetime.now() - halfhour > datetime.fromtimestamp(block.timestamp) or
         datetime.now() + halfhour <  datetime.fromtimestamp(block.timestamp)):
         return "block rejected, timestamp off"
-    if block.previous_hash != dbinterface.getBlock(block.index - 1, endpoint).compute_hash():
+    # if block.previous_hash != dbinterface.getBlock(block.index - 1, endpoint).compute_hash():
         # previous block mismatch
-        return "block rejected, hash mismatch"
+        # return "block rejected, hash mismatch"
+    dbinterface.getBlock(block.index - 1, endpoint).compute_hash()
     #TODO: reject block if a copy is already known
     #TODO: reject block if whitebox is already known
     #TODO: reject block for other reasons
