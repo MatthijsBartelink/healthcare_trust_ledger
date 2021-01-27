@@ -74,14 +74,14 @@ def check(endpoint):
         else:
             message = "Negative trust advice, peers report too few links"
 
-    summary = ("Trust Reports Summary:\n"
-               "Security Parameter: {}\n\n"
-               "Peers Reached: {}\n"
-               "Peers Failed: {}\n\n"
-               "Positive Trust-Links: {}\n"
-               "Median: {}\n\n"
-               "Negative Trust-Links: {}\n"
-               "Median: {}\n\n"
+    summary = ("Trust Reports Summary:<br>"
+               "Security Parameter: {}<br><br>"
+               "Peers Reached: {}<br>"
+               "Peers Failed: {}<br><br>"
+               "Positive Trust-Links: {}<br>"
+               "Median: {}<br><br>"
+               "Negative Trust-Links: {}<br>"
+               "Median: {}<br><br>"
                "{}")
 
     return summary.format(security_parameter, reports_to_get - failed, failed,
@@ -251,6 +251,7 @@ def presentblock(endpoint, blockJSON):
         # previous block mismatch
         return "block rejected, hash mismatch"
     #TODO: reject block if a copy is already known
+    #TODO: reject block if whitebox is already known
     #TODO: reject block for other reasons
 
     #TODO: Drop blocks that may now be invalid, or reject block for stored block with precedent
@@ -376,6 +377,8 @@ def setupNewLedger(endpoint):
 
     newblock = Block(1, "ADD", timestamp, 1, keyhash, context[1], endpoint)
     dbinterface.addBlock(newblock, endpoint)
+
+    print("made first block, hash is: {}".format(newblock.compute_hash()))
 
     return "new trust link and ledger for {}".format(endpoint)
 
