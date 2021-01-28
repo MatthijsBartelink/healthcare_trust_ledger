@@ -10,7 +10,7 @@ from hashlib import sha256
 from statistics import median
 import os
 
-discovery_server = "http://145.100.104.48:5000"
+discovery_server = "http://192.168.2.11:5000"
 verify_with_count = 7
 security_parameter = 5
 

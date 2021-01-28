@@ -7,7 +7,7 @@ import time
 
 num_tests = 10
 
-target = "192.168.2.11:5000"
+target = "145.100.104.48:5000"
 blocks_to_push = 10000
 block_whitebox = "192.168.2.11:5000"
 endpoint = "endpoint"
@@ -19,6 +19,7 @@ block = Block(id, "ADD", datetime.timestamp(datetime.now()), 0, firsthash, block
 
 for blocknum in range(blocks_to_push):
     # print("{} {}".format(blocknum, os.stat('./../WhiteboxServer/endpoint.db').st_size))
+    print(blocknum, end=' ')
 
     for i in range(num_tests):
         start = time.time()
@@ -27,7 +28,7 @@ for blocknum in range(blocks_to_push):
         roundtrip = time.time() - start
         print(roundtrip, newline=' ')
 
-    print(';')
+    print('')
 
     request_url = "http://{}/presentblock/{}&{}".format(target, endpoint, block.toJSON())
     r = requests.get(request_url)
