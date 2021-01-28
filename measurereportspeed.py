@@ -7,7 +7,7 @@ import time
 
 num_tests = 10
 
-target = "192.168.2.11:5000"
+target = "145.100.104.48:5000"
 blocks_to_push = 10000
 block_whitebox = "192.168.2.11:5000"
 endpoint = "endpoint"
@@ -25,9 +25,9 @@ for blocknum in range(blocks_to_push):
         request_url = "http://{}/trustreport/{}".format(target, endpoint)
         r = requests.get(request_url)
         roundtrip = time.time() - start
-        print(roundtrip, newline=' ')
+        print(roundtrip, end=' ')
 
-    print(';')
+    print('')
 
     request_url = "http://{}/presentblock/{}&{}".format(target, endpoint, block.toJSON())
     r = requests.get(request_url)
