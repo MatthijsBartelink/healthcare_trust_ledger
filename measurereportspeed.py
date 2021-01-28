@@ -26,7 +26,7 @@ for blocknum in range(blocks_to_push):
         request_url = "http://{}/trustreport/{}".format(target, endpoint)
         r = requests.get(request_url)
         roundtrip = time.time() - start
-        print(roundtrip, newline=' ')
+        print(roundtrip, end=' ')
 
     print('')
 
