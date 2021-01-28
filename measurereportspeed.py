@@ -19,6 +19,7 @@ block = Block(id, "ADD", datetime.timestamp(datetime.now()), 0, firsthash, block
 
 for blocknum in range(blocks_to_push):
     # print("{} {}".format(blocknum, os.stat('./../WhiteboxServer/endpoint.db').st_size))
+    print(blocknum, end=' ')
 
     for i in range(num_tests):
         start = time.time()
