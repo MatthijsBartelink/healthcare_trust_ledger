@@ -5,7 +5,7 @@ import os
 import requests
 import time
 
-num_tests = 10
+num_tests = 100
 
 target = "145.100.104.48:5000"
 blocks_to_push = 10000
